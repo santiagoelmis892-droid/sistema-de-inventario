@@ -1,81 +1,92 @@
 # sistema-de-inventario
 # programa de auditoria para controlar el stock minimo y reabastecer inventario
-# elmis mauricio porras santiago 
+# elmis mauricio porras santiago
 # 1064842767
+# grupo 161
 
 # --- logica del negocio ---
-def determinar_cantidad_a_pedir (stock_actual, stock_minimo):
- """
-    determinar la cantidad de mercancia a pedir.
-    sigue la logica: si esta por agotarse, se solicita realizar el pedido.
-    de lo contrario, no se encarga y pasa arevisar el sigiente producto.
-    """
- if stock_actual < stock_minimo:
-  return stock_minimo - stock_actual
- else:
-    return 0    
-# --- programa principal ---
-def main():
-  # matriz de los productos
-  # estructura de cada producto: [codigo, nombre del producto, stock actual, stock minimo]
-  inventario = [
-    [101, "colchon 140*30", 10, 10],
-    [102, "somier + espaldar 140", 5, 9],
-    [103, "sillas allure", 100, 200],
-    [104, "mesa plastica", 50, 40],
-    [105, "ventilador de pedestal", 100, 60],
-    [106, "colcha española 140", 100, 50],
-    [107, "lavadora semiautomatica", 20, 30],
-    [108, "refrigerador star 200 litros", 15, 10],
-    [109, "televisor 40 pulgadas", 5, 5],
-    [110, "licuadora vaso de vidrio", 150, 100],
-    [111, "freidora de aire", 30, 30],
-    [112, "mecedora de hierro", 20, 22],
-    [113, "closet palermo", 10, 9],
-    [114, "vajilla de ceramica", 80, 79],
-    [115, "gabetero plastico", 50, 51]
-  ]
+def determinar_cantidad_a_pedir(stock_actual: int, stock_minimo: int) -> int:
+    """Determina la cantidad de mercancía a pedir."""
+    return max(0, stock_minimo - stock_actual)
 
-# =============================================================================================
-# solicitar datos del in ventario actual
-# =============================================================================================
-  print("=== ingresa la cantidad actual de cada producto ===")
 
-    # recorido de la matriz para determinar la cantidad a pedir de cada producto
-  for producto in inventario:
-      # mejora: desempaquetadodirecto de la lista en variables(indice 0, 1, 2, 3)
-      codigo, nombre, actual, minimo = producto
-      print(f"\nproducto: {nombre}")
-      while True:
+def obtener_entero_valido(prompt: str, minimo: int = 0) -> int:
+    while True:
+        texto = input(prompt).strip()
+        if not texto:
+            print("Error: debe ingresar un número.")
+            continue
+
         try:
-          actual = int(input("ingrese la cantidad actual del producto: "))
-          break
+            valor = int(texto)
         except ValueError:
-          print("error: solo es valido ingresar numeros enteros. intenta de nuevo.")
-      # esto guarda el nuevo valor dentro de la matriz para que no se pierda
-      producto[2] = actual
+            print("Error: ingrese un número entero válido.")
+            continue
 
-# ============================================================================================
-# generar y mostrar la tabla de resultados completos
-# ============================================================================================
+        if valor < minimo:
+            print(f"Error: el valor debe ser mayor o igual a {minimo}.")
+            continue
 
-  print("_"* 50)
-  print("  listado de productos a pedir")
-  print("_"* 50)
-  print(f"| {'articulo':<28} | {'cantidad a pedir':<5}|")
-  print("_"* 50)
+        return valor
 
-    # Recorre la matriz ya actualizada y muestra todo de una vez
-  for producto in inventario:
-      codigo, nombre, actual, minimo = producto
-      # llama al modulo (funcion) pasando los parametros para determinar la cantidad a pedir
-      cantidad_solicitada = determinar_cantidad_a_pedir(actual, minimo)
 
-      # requisito de salida: imprimir el nombre del producto y la cantidad a pedir
-      #(¡sin comillas internas para que use las variables reales!)
-      print(f"| {nombre:<28} | {cantidad_solicitada:<5}|")
-  print("_" * 50)
+def crear_inventario():
+    return [
+        [101, "colchon 140*30", 10, 10],
+        [102, "somier + espaldar 140", 5, 9],
+        [103, "sillas allure", 100, 200],
+        [104, "mesa plastica", 50, 40],
+        [105, "ventilador de pedestal", 100, 60],
+        [106, "colcha española 140", 100, 50],
+        [107, "lavadora semiautomatica", 20, 30],
+        [108, "refrigerador star 200 litros", 15, 10],
+        [109, "televisor 40 pulgadas", 5, 5],
+        [110, "licuadora vaso de vidrio", 150, 100],
+        [111, "freidora de aire", 30, 30],
+        [112, "mecedora de hierro", 20, 22],
+        [113, "closet palermo", 10, 9],
+        [114, "vajilla de ceramica", 80, 79],
+        [115, "gabetero plastico", 50, 51],
+    ]
+
+
+def actualizar_stock_actual(inventario):
+    print("=== ingresa la cantidad actual de cada producto ===")
+
+    for producto in inventario:
+        codigo, nombre, actual, minimo = producto
+        print(f"\nProducto: {nombre} (código {codigo})")
+        producto[2] = obtener_entero_valido(
+            "ingrese la cantidad actual del producto: ", minimo=0
+        )
+
+
+def imprimir_reporte(inventario):
+    print("_" * 60)
+    print("  listado de productos a pedir")
+    print("_" * 60)
+    print(f" |{'codigo':<8} | {'articulo':<28} | {'cantidad a pedir':<18} | ")
+    print("_" * 60)
+
+    for producto in inventario:
+        codigo, nombre, actual, minimo = producto
+        cantidad_solicitada = determinar_cantidad_a_pedir(actual, minimo)
+        print(f" | {codigo:<8} | {nombre:<28} | {cantidad_solicitada:<18} | ")
+
+    print("_" * 60)
+
+
+def main():
+    inventario = crear_inventario()
+
+    try:
+        actualizar_stock_actual(inventario)
+    except KeyboardInterrupt:
+        print("\nEjecución interrumpida por el usuario.")
+        return
+
+    imprimir_reporte(inventario)
 
 
 if __name__ == "__main__":
-  main()
+    main()
