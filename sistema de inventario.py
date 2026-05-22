@@ -4,6 +4,11 @@
 # 1064842767
 # grupo 161
 
+CODIGO_IDX = 0
+NOMBRE_IDX = 1
+STOCK_ACTUAL_IDX = 2
+STOCK_MINIMO_IDX = 3
+
 # --- logica del negocio ---
 def determinar_cantidad_a_pedir(stock_actual: int, stock_minimo: int) -> int:
     """Determina la cantidad de mercancía a pedir."""
@@ -54,9 +59,10 @@ def actualizar_stock_actual(inventario):
     print("=== ingresa la cantidad actual de cada producto ===")
 
     for producto in inventario:
-        codigo, nombre, actual, minimo = producto
+        codigo = producto[CODIGO_IDX]
+        nombre = producto[NOMBRE_IDX]
         print(f"\nProducto: {nombre} (código {codigo})")
-        producto[2] = obtener_entero_valido(
+        producto[STOCK_ACTUAL_IDX] = obtener_entero_valido(
             "ingrese la cantidad actual del producto: ", minimo=0
         )
 
@@ -65,13 +71,16 @@ def imprimir_reporte(inventario):
     print("_" * 60)
     print("  listado de productos a pedir")
     print("_" * 60)
-    print(f" |{'codigo':<8} | {'articulo':<28} | {'cantidad a pedir':<18} | ")
+    print(f" |{'codigo':<8} | {'articulo':<28} | {'cantidad a pedir':<12} | ")
     print("_" * 60)
 
     for producto in inventario:
-        codigo, nombre, actual, minimo = producto
+        codigo = producto[CODIGO_IDX]
+        nombre = producto[NOMBRE_IDX]
+        actual = producto[STOCK_ACTUAL_IDX]
+        minimo = producto[STOCK_MINIMO_IDX]
         cantidad_solicitada = determinar_cantidad_a_pedir(actual, minimo)
-        print(f" | {codigo:<8} | {nombre:<28} | {cantidad_solicitada:<18} | ")
+        print(f" | {codigo:<8} | {nombre:<28} | {cantidad_solicitada:<12} | ")
 
     print("_" * 60)
 
